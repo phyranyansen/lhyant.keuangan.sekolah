@@ -78,6 +78,7 @@ class Payout_set extends CI_Controller {
     $data['month'] = $this->Bulan_model->get_total($cashback);
     $data['beb'] = $this->Bebas_pay_model->get($cashback);
     $data['log'] = $this->Log_trx_model->get($logs);
+    $data['list_bulan'] = $this->Bulan_model->get_month();
 
     // cashback
     $data['cash'] = 0;
@@ -113,8 +114,15 @@ class Payout_set extends CI_Controller {
     $config['suffix'] = '?' . http_build_query($_GET, '', "&");
     $config['total_rows'] = count($this->Bulan_model->get($paramsPage));
 
+    // echo "<pre>";
+    // print_r($data);
+    // echo "</pre>";
+    // die();
+
     $data['title'] = 'Pembayaran Siswa';
     $data['main'] = 'payout/payout_list';
+    $data['siswa_nisn'] = $f['r'];
+    $data['period_id'] = $f['n'];
     $this->load->view('manage/layout', $data);
   } 
 
@@ -430,6 +438,11 @@ class Payout_set extends CI_Controller {
       $nofull = date('Y'). date('m'). $nomor;
     }
 
+    // check apakah pembayaran sudah pas atau masih kurang ?
+    // $pay_bulanan = $this->Bulan_model->get([
+    //   'student_nis' => 
+    // ]);
+
 
     $pay = array(
       'bulan_id' => $id,
@@ -648,6 +661,27 @@ class Payout_set extends CI_Controller {
       redirect('manage/payment/edit/' . $id);
     }
   }
+
+  // AJAX FOR CHECK TOTAL PAYMENT WITH MONTH AND PERIOD
+    public function checkMonthPay()
+    {
+      $f = $this->input->get();
+
+      $nisnSiswa = $f['r'];
+      $periode = $f['n'];
+      $month = $f['month'];
+
+      $data['checkMonthPay'] = $this->Bulan_model->get([
+        'student_nis' => $nisnSiswa,
+        'month_id' => $month,
+        'period_id' => $periode
+      ]);
+     
+      echo json_encode([
+        'status' => 200,
+        'data' => $data
+      ]);
+    }
 
 
 }

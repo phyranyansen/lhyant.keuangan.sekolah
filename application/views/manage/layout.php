@@ -34,6 +34,7 @@
     <script src="<?php echo media_url() ?>/js/jquery.inputmask.bundle.js"></script>
 
     <script src="<?php echo base_url('/media/js/fullcalendar/fullcalendar.js'); ?>"></script>
+    <script src="<?php echo media_url() ?>/js/main.js"></script>
 
 
 </head>

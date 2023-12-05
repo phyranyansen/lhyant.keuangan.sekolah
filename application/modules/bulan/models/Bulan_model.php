@@ -302,6 +302,10 @@ class Bulan_model extends CI_Model {
         $this->db->set('bulan_last_update', $data['bulan_last_update']);
     }
 
+    if(isset($data['bulan_additional_bill'])) {
+        $this->db->set('bulan_additional_bill', $data['bulan_additional_bill']);
+    }
+
     if (isset($data['bulan_id'])) {
         $this->db->where('bulan_id', $data['bulan_id']);
         $this->db->update('bulan');

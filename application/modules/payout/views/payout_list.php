@@ -130,7 +130,7 @@
 
                 <div class="row">
 
-                    <div class="col-md-5">
+                    <div class="col-md-12">
                         <div class="box box-primary">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Transaksi Terakhir</h3>
@@ -159,7 +159,10 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-9">
                         <div class="box box-primary">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Pembayaran</h3>
@@ -167,7 +170,7 @@
                             <div class="box-body">
                                 <form id="calcu" name="calcu" method="post" action="">
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Total</label>
                                                 <input type="text" class="form-control numeric"
@@ -176,7 +179,7 @@
                                                     onblur="stopCalc()">
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Dibayar</label>
                                                 <input type="text" class="form-control numeric"
@@ -185,11 +188,26 @@
                                                     onblur="stopCalc()">
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Bulan</label>
+                                                <select class="form-control" id="monthList">
+                                                    <option value="" disabled selected>-- PILIH BULAN --</option>
+                                                    <?php foreach($list_bulan as $keyBulan => $valueBulan) {
+                                                        ?>
+                                                        <option value="<?php echo $valueBulan['month_id'];?>"><?php echo $valueBulan['month_name'];?></option>
+                                                <?php } ?>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label>Kembalian</label>
                                         <input type="text" class="form-control numeric" readonly="" name="kembalian"
                                             id="kembalian" onblur="stopCalc()">
+                                    </div>
+                                    <div class="form-group" style="float:right;">
+                                        <button class="btn btn-success" type="submit">Bayar</button>
                                     </div>
                                 </form>
                             </div>
@@ -222,7 +240,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
 
 
@@ -430,6 +447,16 @@ $(document).ready(function() {
     $("#selectall").change(function() {
         $(".checkbox").prop('checked', $(this).prop("checked"));
     });
+
+    $('#monthList').change(function(e) {
+        let value = $(this).val()
+        let url = `<?php echo base_url();?>manage/payout/checkMonthPay?n=<?php echo $period_id;?>&r=<?php echo $siswa_nisn;?>&month=${value}`
+        send((data, xhr = null) => {
+           if(data.status == 200) {
+            $('#harga').val(data.data['checkMonthPay'][0]['bulan_bill'])
+           }
+        }, url, "json", "get");
+    })
 });
 </script>
 
