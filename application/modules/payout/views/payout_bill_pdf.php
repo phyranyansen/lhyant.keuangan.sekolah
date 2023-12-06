@@ -98,7 +98,7 @@ table {
             <td style="text-align: center;"><?php echo $i ?></td>
             <td><?php echo $namePay .' - ('.$row['month_name'].' '.$mont.')' ?></td>
             <td style="text-align: <?php echo ($row['bulan_status']==1) ? 'center' : ''; ?>;"><?php echo ($row['bulan_status']==1) ? pretty_date($row['bulan_date_pay'],'d F Y',false) : '-' ?></td>
-            <td><?php echo ($row['bulan_status']==0) ? 'Rp. '. number_format($row['bulan_bill'], 0, ',', '.') : 'Rp. -' ?></td>
+            <td><?php echo ($row['bulan_status']==0) ? 'Rp. '. number_format(($row['bulan_bill'] + $row['bulan_additional_bill']), 0, ',', '.') : 'Rp. -' ?></td>
             <td><?php echo ($row['bulan_status']==1) ? 'Lunas' : 'Belum Lunas' ?></td>
           </tr>
           <?php 

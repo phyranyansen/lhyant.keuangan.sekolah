@@ -130,7 +130,7 @@
 
                 <div class="row">
 
-                    <div class="col-md-12">
+                    <div class="col-md-6">
                         <div class="box box-primary">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Transaksi Terakhir</h3>
@@ -148,7 +148,7 @@
                                     <tr>
                                         <td><?php echo ($key['bulan_bulan_id']!= NULL) ? $key['posmonth_name'].' - T.A '.$key['period_start_month'].'/'.$key['period_end_month'].' ('.$key['month_name'].')' : $key['posbebas_name'].' - T.A '.$key['period_start_bebas'].'/'.$key['period_end_bebas'] ?>
                                         </td>
-                                        <td><?php echo ($key['bulan_bulan_id']!= NULL) ? 'Rp. '. number_format($key['bulan_bill'], 0, ',', '.') : 'Rp. '. number_format($key['bebas_pay_bill'], 0, ',', '.') ?>
+                                        <td><?php echo ($key['bulan_bulan_id']!= NULL) ? 'Rp. '. number_format(($key['bulan_pay'] ?? 0), 0, ',', '.') : 'Rp. '. number_format($key['bebas_pay_bill'], 0, ',', '.') ?>
                                         </td>
                                         <td><?php echo pretty_date($key['log_trx_input_date'],'d F Y',false)  ?></td>
                                     </tr>
@@ -159,62 +159,7 @@
                         </div>
                     </div>
 
-                </div>
-
-                <div class="row">
-                    <div class="col-md-9">
-                        <div class="box box-primary">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Pembayaran</h3>
-                            </div>
-                            <div class="box-body">
-                                <form id="calcu" name="calcu" method="post" action="">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Total</label>
-                                                <input type="text" class="form-control numeric"
-                                                    value="<?php echo $cash+$cashb ?>" name="harga" id="harga"
-                                                    placeholder="Total Pembayaran" onfocus="startCalculate()"
-                                                    onblur="stopCalc()">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Dibayar</label>
-                                                <input type="text" class="form-control numeric"
-                                                    value="<?php echo $cash+$cashb ?>" name="bayar" id="bayar"
-                                                    placeholder="Jumlah Uang" onfocus="startCalculate()"
-                                                    onblur="stopCalc()">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label>Bulan</label>
-                                                <select class="form-control" id="monthList">
-                                                    <option value="" disabled selected>-- PILIH BULAN --</option>
-                                                    <?php foreach($list_bulan as $keyBulan => $valueBulan) {
-                                                        ?>
-                                                        <option value="<?php echo $valueBulan['month_id'];?>"><?php echo $valueBulan['month_name'];?></option>
-                                                <?php } ?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Kembalian</label>
-                                        <input type="text" class="form-control numeric" readonly="" name="kembalian"
-                                            id="kembalian" onblur="stopCalc()">
-                                    </div>
-                                    <div class="form-group" style="float:right;">
-                                        <button class="btn btn-success" type="submit">Bayar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <div class="box box-primary">
                             <div class="box-header with-border">
                                 <h3 class="box-title">Cetak Bukti Pembayaran</h3>
@@ -240,8 +185,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
 
 
                 <!-- List Tagihan Bulanan -->
@@ -279,14 +224,14 @@
                                                     <td><?php echo $i ?></td>
                                                     <td><?php echo $row['pos_name'].' - T.A '.$row['period_start'].'/'.$row['period_end'] ?>
                                                     </td>
-                                                    <td><?php echo ($total == $pay) ? 'Rp. -' : 'Rp. '.number_format($total-$pay,0,',','.') ?>
+                                                    <td><?php echo ($total == $pay) ? 'Rp. -' : 'Rp. '.number_format($total,0,',','.') ?>
                                                     </td>
                                                     <?php foreach ($bulan as $row) : ?>
                                                     <td
                                                         class="<?php echo ($row['bulan_status'] ==1) ? 'success' : 'danger' ?>">
-                                                        <a href="<?php echo ($row['bulan_status'] ==0) ? site_url('manage/payout/pay/' . $row['payment_payment_id'].'/'.$row['student_student_id'].'/'.$row['bulan_id']) : site_url('manage/payout/not_pay/' . $row['payment_payment_id'].'/'.$row['student_student_id'].'/'.$row['bulan_id'])?>"
-                                                            onclick="return confirm('<?php echo ($row['bulan_status']==0) ? 'Anda Akan Melakukan Pembayaran bulan '.$row['month_name'].'?' : 'Anda Akan Menghapus Pembayaran bulan'.$row['month_name'].'?' ?>')">
-                                                            <?php echo ($row['bulan_status']==1) ? '('.pretty_date($row['bulan_date_pay'],'d/m/y',false).')': number_format($row['bulan_bill'], 0, ',', '.') ?></a>
+                                                        <a href="#"
+                                                            onclick="modalPay(<?php echo ($row['bulan_bill'] + $row['bulan_additional_bill']);?>, 'Pembayaran SPP Bulan <?php echo $row['month_name']; ?>'  , '<?php echo site_url('manage/payout/pay/' . $row['payment_payment_id'].'/'.$row['student_student_id'].'/'.$row['bulan_id']);?>')">
+                                                            <?php echo ($row['bulan_status']==1) ? '('.pretty_date($row['bulan_date_pay'],'d/m/y',false).')': number_format(($row['bulan_bill'] + $row['bulan_additional_bill']), 0, ',', '.') ?></a>
                                                     </td>
                                                     <?php endforeach ?>
 
@@ -420,6 +365,49 @@
     </section>
 </div>
 
+<div class="modal fade in" id="addPayment" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="titlePayment"></h4>
+      </div>
+      <div class="modal-body">
+        <form id="calcu" name="calcu" method="post" action="">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Total</label>
+                        <input type="text" class="form-control numeric"
+                            name="harga" id="harga"
+                            placeholder="Total Pembayaran" onfocus="startCalculate()"
+                            onblur="stopCalc()" disabled>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Dibayar</label>
+                        <input type="text" class="form-control numeric"
+                            name="bayar" id="bayar"
+                            placeholder="Jumlah Uang" onfocus="startCalculate()"
+                            onblur="stopCalc()" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Kembalian</label>
+                <input type="text" class="form-control numeric" readonly="" name="kembalian"
+                    id="kembalian" onblur="stopCalc()">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success" type="submit">Bayar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript">
 function startCalculate() {
     interval = setInterval("Calculate()", 10);
@@ -443,7 +431,15 @@ function stopCalc() {
 }
 </script>
 <script>
+function modalPay(paymentTotal, titlePayment, urlPay)
+{
+    $('#harga').val(paymentTotal)
+    $('#titlePayment').html(titlePayment)
+    $('#calcu').attr('action', urlPay)
+    $('#addPayment').modal('show')
+}    
 $(document).ready(function() {
+    let urlPay = ''
     $("#selectall").change(function() {
         $(".checkbox").prop('checked', $(this).prop("checked"));
     });
@@ -453,7 +449,13 @@ $(document).ready(function() {
         let url = `<?php echo base_url();?>manage/payout/checkMonthPay?n=<?php echo $period_id;?>&r=<?php echo $siswa_nisn;?>&month=${value}`
         send((data, xhr = null) => {
            if(data.status == 200) {
-            $('#harga').val(data.data['checkMonthPay'][0]['bulan_bill'])
+            urlPay = `<?php echo base_url();?>manage/payout/pay/${data.data['checkMonthPay'][0]['payment_payment_id']}/${data.data['checkMonthPay'][0]['student_student_id']}/${data.data['checkMonthPay'][0]['bulan_id']}`
+            $('#calcu').attr('action', urlPay)
+            if(data.data['checkMonthPay'][0]['bulan_status'] == 0) {
+                $('#harga').val(data.data['checkMonthPay'][0]['total_must_pay'])
+            } else {
+                $('#harga').val("0")
+            }
            }
         }, url, "json", "get");
     })

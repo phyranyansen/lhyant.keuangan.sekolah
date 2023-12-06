@@ -73,6 +73,8 @@ class Payout_set extends CI_Controller {
     $data['bebas'] = $this->Bebas_model->get($pay);
     $data['free'] = $this->Bebas_pay_model->get($params);
     $data['dom'] = $this->Bebas_pay_model->get($params);
+
+    $params['status'] = 0;
     $data['bill'] = $this->Bulan_model->get_total($params);
     $data['in'] = $this->Bulan_model->get_total($param);
     $data['month'] = $this->Bulan_model->get_total($cashback);
@@ -97,12 +99,12 @@ class Payout_set extends CI_Controller {
     // 
     $data['total'] = 0;
     foreach ($data['bill'] as $key) {
-      $data['total'] += $key['bulan_bill'];
+      $data['total'] += ($key['bulan_bill'] + $key['bulan_additional_bill']);
     }
 
     $data['pay'] = 0;
     foreach ($data['in'] as $row) {
-      $data['pay'] += $row['bulan_bill'];
+      $data['pay'] += $row['bulan_pay'];
     }
 
     $data['pay_bill'] = 0;
@@ -114,15 +116,11 @@ class Payout_set extends CI_Controller {
     $config['suffix'] = '?' . http_build_query($_GET, '', "&");
     $config['total_rows'] = count($this->Bulan_model->get($paramsPage));
 
-    // echo "<pre>";
-    // print_r($data);
-    // echo "</pre>";
-    // die();
-
     $data['title'] = 'Pembayaran Siswa';
     $data['main'] = 'payout/payout_list';
-    $data['siswa_nisn'] = $f['r'];
-    $data['period_id'] = $f['n'];
+    $data['siswa_nisn'] = $f['r'] ?? '';
+    $data['period_id'] = $f['n'] ?? '';
+
     $this->load->view('manage/layout', $data);
   } 
 
@@ -217,7 +215,7 @@ class Payout_set extends CI_Controller {
     //total
     $data['summonth'] = 0;
     foreach ($data['s_bl'] as $row) {
-      $data['summonth'] += $row['bulan_bill'];
+      $data['summonth'] += ($row['bulan_pay']);
     }
 
     $data['sumbeb'] = 0;
@@ -427,6 +425,7 @@ class Payout_set extends CI_Controller {
     $user = $this->Setting_model->get(array('id' => 8));
     $password = $this->Setting_model->get(array('id' => 9));
     $activated = $this->Setting_model->get(array('id' => 10));
+    $p = $this->input->post();
 
     if ($lastletter['letter_year'] < date('Y') OR count($lastletter) == 0) {
       $this->Letter_model->add(array('letter_number' => '00001', 'letter_month' => date('m'), 'letter_year' => date('Y')));
@@ -439,10 +438,37 @@ class Payout_set extends CI_Controller {
     }
 
     // check apakah pembayaran sudah pas atau masih kurang ?
-    // $pay_bulanan = $this->Bulan_model->get([
-    //   'student_nis' => 
-    // ]);
+    $pay_bulanan = $this->Bulan_model->get([
+      'student_id' => $student_id,
+      'id' => $id,
+      'payment_id' => $payment_id
+    ]);
 
+    if($pay_bulanan['bulan_status'] == 1) {
+      $this->session->set_flashdata('success', 'Pembayaran Sudah Lunas');
+      redirect('manage/payout?n='.$student['period_period_id'].'&r='.$student['student_nis']);
+    }
+
+    if($pay_bulanan) {
+      $total_must_pay = $pay_bulanan['bulan_bill'] + ($pay_bulanan['bulan_additional_bill'] ?? 0);
+      if($p['bayar'] < $total_must_pay) {
+        $additional_bulan_bill = $total_must_pay - $p['bayar'];
+        // masukkan kurangan biaya ke bulan selanjutnya
+        $bulan_pay = $pay_bulanan['month_month_id'] + 1;
+        $next_pay = $this->Bulan_model->get([
+          'student_id' => $student_id,
+          'month_id' => $bulan_pay,
+          'payment_id' => $payment_id
+        ]);
+
+        $pay = array(
+          'bulan_id' => $next_pay[0]['bulan_id'],
+          'bulan_additional_bill' => $additional_bulan_bill
+        );
+
+        $this->Bulan_model->add($pay);
+      }
+    }
 
     $pay = array(
       'bulan_id' => $id,
@@ -450,7 +476,8 @@ class Payout_set extends CI_Controller {
       'bulan_date_pay' => date('Y-m-d H:i:s'),
       'bulan_last_update' => date('Y-m-d H:i:s'),
       'bulan_status' => 1,
-      'user_user_id' => $this->session->userdata('uid')
+      'user_user_id' => $this->session->userdata('uid'),
+      'bulan_pay' => $p['bayar']
     );
 
     $log = array(
@@ -671,12 +698,18 @@ class Payout_set extends CI_Controller {
       $periode = $f['n'];
       $month = $f['month'];
 
-      $data['checkMonthPay'] = $this->Bulan_model->get([
+      $checkMonth = $this->Bulan_model->get([
         'student_nis' => $nisnSiswa,
         'month_id' => $month,
         'period_id' => $periode
       ]);
-     
+
+      foreach($checkMonth as $key => $value) {
+        $checkMonth[$key]['total_must_pay'] = $value['bulan_bill'] + $value['bulan_additional_bill'];
+      }
+
+      $data['checkMonthPay'] = $checkMonth;
+
       echo json_encode([
         'status' => 200,
         'data' => $data

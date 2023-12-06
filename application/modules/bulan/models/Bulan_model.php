@@ -127,7 +127,7 @@ class Bulan_model extends CI_Model {
 
         $this->db->order_by('month_month_id', 'asc');
 
-        $this->db->select('bulan.bulan_id, bulan_bill, bulan_date_pay, bulan_number_pay, bulan_status, bulan_input_date, bulan_last_update');
+        $this->db->select('bulan.bulan_id, bulan_bill, bulan_date_pay, bulan_number_pay, bulan_status, bulan_input_date, bulan_last_update, bulan_additional_bill, bulan_pay');
 
         $this->db->select('student_student_id, student_img, student_nis, student_full_name, student_name_of_mother, student_parent_phone, student.class_class_id, student.majors_majors_id, majors_name, majors_short_name, class_name');
         $this->db->select('payment_payment_id, period_period_id, period_status, period_start, period_end, pos_name, payment_type');
@@ -226,7 +226,7 @@ class Bulan_model extends CI_Model {
 
         $this->db->order_by('month_month_id', 'asc');
 
-        $this->db->select('bulan.bulan_id, bulan_bill, bulan_date_pay, bulan_status, bulan_input_date, bulan_last_update');
+        $this->db->select('bulan.bulan_id, bulan_bill, bulan_date_pay, bulan_status, bulan_input_date, bulan_last_update, bulan_additional_bill, bulan_pay');
         // $this->db->select('sum(bulan_bill) AS total');
 
         $this->db->select('student_student_id, student_img, student_nis, student_full_name, student_name_of_mother, student.class_class_id, student.majors_majors_id, majors_name, majors_short_name, class_name');
@@ -304,6 +304,10 @@ class Bulan_model extends CI_Model {
 
     if(isset($data['bulan_additional_bill'])) {
         $this->db->set('bulan_additional_bill', $data['bulan_additional_bill']);
+    }
+
+    if(isset($data['bulan_pay'])) {
+        $this->db->set('bulan_pay', $data['bulan_pay']);
     }
 
     if (isset($data['bulan_id'])) {

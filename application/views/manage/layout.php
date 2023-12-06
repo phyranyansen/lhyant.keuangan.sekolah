@@ -26,6 +26,8 @@
     <!-- Daterange picker -->
     <link rel="stylesheet" href="<?php echo media_url() ?>/css/daterangepicker.css">
     <link href="<?php echo base_url('/media/js/fullcalendar/fullcalendar.css'); ?>" rel="stylesheet">
+    <!-- Pace style -->
+    <link rel="stylesheet" href="<?php echo media_url() ?>/pace/pace.min.css">
 
     <script src="<?php echo media_url() ?>/js/jquery.min.js"></script>
     <script src="<?php echo media_url() ?>/js/angular.min.js"></script>
@@ -34,7 +36,14 @@
     <script src="<?php echo media_url() ?>/js/jquery.inputmask.bundle.js"></script>
 
     <script src="<?php echo base_url('/media/js/fullcalendar/fullcalendar.js'); ?>"></script>
+    <script src="<?php echo media_url() ?>/pace/pace.min.js"></script>
     <script src="<?php echo media_url() ?>/js/main.js"></script>
+
+    <script>
+        $(document).ajaxStart(function() {
+            Pace.restart()
+        })
+    </script>
 
 
 </head>

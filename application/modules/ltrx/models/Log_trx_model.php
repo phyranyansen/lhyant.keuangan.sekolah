@@ -56,7 +56,7 @@ class Log_trx_model extends CI_Model {
             $this->db->order_by('log_trx_id', 'desc');
         }
         $this->db->select('log_trx.log_trx_id, log_trx_input_date, log_trx_last_update');
-        $this->db->select('bulan_bulan_id, log_trx.student_student_id, student_nis, bulan_bill, month_name, bebas_pay_bill');
+        $this->db->select('bulan_bulan_id, log_trx.student_student_id, student_nis, bulan_bill, month_name, bebas_pay_bill, bulan_pay');
 
         $this->db->select('posMonth.pos_name AS posmonth_name, posBebas.pos_name AS posbebas_name, periodMonth.period_start AS period_start_month, periodMonth.period_end AS period_end_month');
         $this->db->select('periodBebas.period_start AS period_start_bebas, periodBebas.period_end AS period_end_bebas');

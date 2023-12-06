@@ -143,9 +143,9 @@ hr {
 			<tr>
 				<td style="border-bottom: 1px solid;padding-top: 10px; padding-bottom: 10px;"><?php echo $i ?></td>
 				<td style="border-bottom: 1px solid;"><?php echo $namePay.' - ('.$row['month_name'].' '. $mont.')' ?></td>
-				<td style="border-bottom: 1px solid"><?php echo 'Rp. ' . number_format($row['bulan_bill'], 0, ',', '.') ?></td>
+				<td style="border-bottom: 1px solid"><?php echo 'Rp. ' . number_format(($row['bulan_bill'] + $row['bulan_additional_bill']), 0, ',', '.') ?></td>
 				<td style="border-bottom: 1px solid;">Rp. </td>
-				<td style="border-bottom: 1px solid; text-align: right;"><?php echo number_format($row['bulan_bill'], 0, ',', '.') ?></td>
+				<td style="border-bottom: 1px solid; text-align: right;"><?php echo number_format($row['bulan_pay'], 0, ',', '.') ?></td>
 			</tr>
 			<?php 
 				$i++;
